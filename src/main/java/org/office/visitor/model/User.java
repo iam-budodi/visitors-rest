@@ -1,11 +1,13 @@
 package org.office.visitor.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,16 +23,21 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 /**
  * Entity implementation class for Entity: User
  *
  */
-@Entity()
+
+@Entity(name = "User")
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "user_identifier", discriminatorType = DiscriminatorType.CHAR)
+@DiscriminatorColumn(name = "user_identifier", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("User")
 public class User implements Serializable {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "user_id")
@@ -40,58 +47,68 @@ public class User implements Serializable {
 	@Size(min = 3, max = 50)
 	@Column(name = "first_name", length = 50, nullable = false)
     @Pattern(regexp = "[A-Za-z]*", message = "must contain only letters")
-	private String firstName;
+	protected String firstName;
 	
 	@NotNull
 	@Size(min = 1, max = 50)
 	@Column(name = "middle_name", length = 50, nullable = true)
     @Pattern(regexp = "[A-Za-z]*", message = "must contain only letters")
-	private String middleName;
+	protected String middleName;
 	
 	@NotNull
 	@Size(min = 3, max = 50)
 	@Column(name = "last_name", length = 50, nullable = false)
     @Pattern(regexp = "[A-Za-z]*", message = "must contain only letters")
-	private String lastName;
+	protected String lastName;
 	
 	@NotNull
     @NotEmpty(message = "not a well-formed email address")
     @Email(message = "not a well-formed email address")
-	private String email;
+	protected String email;
 	
 	@NotNull
     @Size(min = 10, max = 12, message = "size must be between 10 and 12")
     @Digits(fraction = 0, integer = 12)
     @Column(name = "phone_number")
-	private String phoneNumber;
+	protected String phoneNumber;
 	
 	@NotNull
 	@Size(min = 4, max = 12)
 	@Column(name = "user_name", length = 12, nullable = false)
-    @Pattern(regexp = "[A-Za-z]*", message = "must contain only letters")
-	private String userName;
+	@Pattern(regexp = "^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){1,18}[a-zA-Z0-9]$", message = "invalid username")
+	protected String userName;
 	
-	private String password;
-	private Long addressId;
-	private LocalDate createdAt;
-	private LocalDate updatedAt;
+	@NotNull
+	@Size(min = 8, max = 256)
+	@Column(length = 256, nullable = false)
+	protected String password;
+	
+	protected Long addressId;
+	
+	@CreationTimestamp
+	@Column(name = "created_on")
+	protected LocalDateTime createdOn;
+	
+	@UpdateTimestamp
+	@Column(name = "updated_on")
+	protected LocalDateTime updatedOn;
 	private static final long serialVersionUID = 1L;
 
-	public User() {
-		super();
-	} 
-	
-	public User(String firstName, String middleName, String lastName, String email, String phoneNumber, String userName,
-			String password) {
-		super();
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
-		this.email = email;
-		this.phoneNumber = phoneNumber;
-		this.userName = userName;
-		this.password = password;
-	}
+//	public User() {
+//		super();
+//	} 
+//	
+//	public User(String firstName, String middleName, String lastName, String email, String phoneNumber, String userName,
+//			String password) {
+//		super();
+//		this.firstName = firstName;
+//		this.middleName = middleName;
+//		this.lastName = lastName;
+//		this.email = email;
+//		this.phoneNumber = phoneNumber;
+//		this.userName = userName;
+//		this.password = password;
+//	}
 
 	public String getFirstName() {
 		return this.firstName;
@@ -157,19 +174,20 @@ public class User implements Serializable {
 		this.addressId = addressId;
 	}
 	
-	public LocalDate getCreatedAt() {
-		return this.createdAt;
+	public LocalDateTime getCreatedAt() {
+		return this.createdOn;
 	}
 
-	public void setCreatedAt(LocalDate createdAt) {
-		this.createdAt = createdAt;
-	}   
-	public LocalDate getUpdatedAt() {
-		return this.updatedAt;
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdOn = createdAt;
+	}
+	
+	public LocalDateTime getUpdatedAt() {
+		return this.updatedOn;
 	}
 
-	public void setUpdatedAt(LocalDate updatedAt) {
-		this.updatedAt = updatedAt;
+	public void setUpdatedAt(LocalDateTime updatedAt) {
+		this.updatedOn = updatedAt;
 	}
 	
 	public Long getUserId() {
@@ -179,5 +197,29 @@ public class User implements Serializable {
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-   
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", firstName=" + firstName + ", middleName=" + middleName + ", lastName="
+				+ lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", userName=" + userName + "]";
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(email, firstName, lastName, middleName, password, phoneNumber, userId, userName);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
+		
+		User user = (User) obj;
+		
+		return Objects.equals(email, user.email) && Objects.equals(firstName, user.firstName)
+				&& Objects.equals(lastName, user.lastName) && Objects.equals(middleName, user.middleName)
+				&& Objects.equals(password, user.password) && Objects.equals(phoneNumber, user.phoneNumber)
+				&& Objects.equals(userId, user.userId) && Objects.equals(userName, user.userName);
+	}
 }

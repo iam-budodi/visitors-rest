@@ -5,29 +5,31 @@ import java.util.Objects;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 
 /**
  * Entity implementation class for Entity: Staff
  *
  */
+
 @Entity(name = "Staff")
-@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("SUser")
 public class Staff extends User implements Serializable {
 
-	private Long department;
+	@ManyToOne(fetch = FetchType.LAZY)
+	private Department department;
+	
 	private static final long serialVersionUID = 1L;
 
 	public Staff() {
 		super();
 	}   
-	public Long getDepartment() {
+	public Department getDepartment() {
 		return this.department;
 	}
 
-	public void setDepartment(Long department) {
+	public void setDepartment(Department department) {
 		this.department = department;
 	}
 	

@@ -42,7 +42,7 @@ public class Department implements Serializable {
 			mappedBy = "department",
 			cascade = CascadeType.ALL,
 			orphanRemoval = true)
-	private Set<Staff> staff = new HashSet<>();
+	private Set<Staff> staffs = new HashSet<>();
 	
 	private static final long serialVersionUID = 1L;
 
@@ -79,6 +79,24 @@ public class Department implements Serializable {
 
 	public void setDepartmentFunction(String departmentFunction) {
 		this.departmentFunction = departmentFunction;
+	}
+	
+	public Set<Staff> getStaffs() {
+		return staffs;
+	}
+
+	public void setStaffs(Set<Staff> staffs) {
+		this.staffs = staffs;
+	}
+
+	public void addStaff(Staff staff) {
+		staffs.add(staff);
+		staff.setDepartment(this);
+	}
+	
+	public void removeStaff(Staff staff) {
+		staffs.remove(staff);
+		staff.setDepartment(null);
 	}
 
 	@Override

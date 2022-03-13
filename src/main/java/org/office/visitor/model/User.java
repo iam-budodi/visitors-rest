@@ -9,11 +9,13 @@ import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Digits;
@@ -83,8 +85,6 @@ public class User implements Serializable {
 	@Column(length = 256, nullable = false)
 	protected String password;
 	
-	protected Long addressId;
-	
 	@CreationTimestamp
 	@Column(name = "created_on")
 	protected LocalDateTime createdOn;
@@ -92,6 +92,10 @@ public class User implements Serializable {
 	@UpdateTimestamp
 	@Column(name = "updated_on")
 	protected LocalDateTime updatedOn;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	protected Address address;
+	
 	private static final long serialVersionUID = 1L;
 
 //	public User() {
@@ -166,12 +170,12 @@ public class User implements Serializable {
 		this.password = password;
 	}
 	
-	public Long getAddressId() {
-		return this.addressId;
+	public Address getAddress() {
+		return this.address;
 	}
 
-	public void setAddressId(Long addressId) {
-		this.addressId = addressId;
+	public void setAddress(Address address) {
+		this.address = address;
 	}
 	
 	public LocalDateTime getCreatedAt() {

@@ -7,8 +7,6 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -19,25 +17,18 @@ import javax.validation.constraints.Size;
  *
  */
 
-@Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@Entity(name = "Visitor")
 @DiscriminatorValue("VUser")
 public class Visitor extends User implements Serializable {
 
 	@NotNull
 	@Size(max = 1)
+	@Column(length = 1)
 	private Character gender;
 
 	@Past
 	@Column(name = "date_of_birth")
 	private LocalDate dateOfBirth;
-
-	public Visitor(@NotNull @Size(max = 1) Character gender, @Past LocalDate dateOfBirth, String avatar) {
-		super();
-		this.gender = gender;
-		this.dateOfBirth = dateOfBirth;
-		this.avatar = avatar;
-	}
 
 	@Column(length = 512)
 	private String avatar;
@@ -68,7 +59,7 @@ public class Visitor extends User implements Serializable {
 	public Character getGender() {
 		return this.gender;
 	}
-	
+
 	public void setGender(Character gender) {
 		this.gender = gender;
 	}
@@ -107,10 +98,13 @@ public class Visitor extends User implements Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj) return true;
-		if (!super.equals(obj)) return false;
-		if (getClass() != obj.getClass()) return false;
-		
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+
 		Visitor visitor = (Visitor) obj;
 		return Objects.equals(age, visitor.age) && Objects.equals(avatar, visitor.avatar)
 				&& Objects.equals(dateOfBirth, visitor.dateOfBirth) && Objects.equals(gender, visitor.gender);
@@ -121,6 +115,5 @@ public class Visitor extends User implements Serializable {
 		return "Visitor [gender=" + gender + ", dateOfBirth=" + dateOfBirth + ", avatar=" + avatar + ", age=" + age
 				+ "]";
 	}
-
 
 }
